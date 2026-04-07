@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wanaut · Dashboard N2 · Q1 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{--bg:#ffffff;--bg2:#f7f6f3;--bg3:#eeede8;--text:#1a1a1a;--text2:#737370;--border:rgba(0,0,0,0.1);--purple:#7F77DD;--purple-l:#EEEDFE;--teal:#1D9E75;--teal-l:#E1F5EE;--blue:#378ADD;--blue-l:#E6F1FB;--amber:#EF9F27;--amber-l:#FAEEDA;--green:#3B6D11;--green-l:#EAF3DE;--red:#A32D2D;--red-l:#FCEBEB;--gray:#888780}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:20px;font-size:13px;line-height:1.4}
+.header{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:14px;border-bottom:0.5px solid var(--border)}
+.logo{width:34px;height:34px;background:var(--purple-l);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.logo svg{width:18px;height:18px}
+.h-title{font-size:16px;font-weight:600}
+.h-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.h-right{margin-left:auto;text-align:right}
+.h-score-l{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.h-score-v{font-size:26px;font-weight:700;color:var(--text)}
+.sec{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);margin-bottom:10px}
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.kpi{background:var(--bg2);border-radius:10px;padding:12px 14px}
+.kl{font-size:11px;color:var(--text2);margin-bottom:3px}
+.kv{font-size:20px;font-weight:700}
+.ks{font-size:10px;margin-top:2px}
+.ok{color:#3B6D11}.warn{color:#854F0B}.danger{color:var(--red)}.neutral{color:var(--text2)}
+.frow{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.fbtn{font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid rgba(0,0,0,0.18);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;font-family:inherit}
+.fbtn:hover{background:var(--bg2)}
+.fbtn.active{background:var(--bg2);color:var(--text);border-color:rgba(0,0,0,0.3);font-weight:600}
+.four{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.tgrid{display:grid;grid-template-rows:1fr 1fr;gap:12px}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:12px;padding:14px 16px}
+.card.conquered{border-color:var(--teal);border-width:1px}
+.ct{font-size:12px;font-weight:600;margin-bottom:2px}
+.cs{font-size:10px;color:var(--text2);margin-bottom:10px}
+.tc{transition:all .2s}
+.tc.dimmed{opacity:.18}
+.pr{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.pr:last-child{margin-bottom:0}
+.pn{font-size:10px;color:var(--text2);flex:1;line-height:1.3}
+.pt{width:64px;flex-shrink:0;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.pb{height:100%;border-radius:3px}
+.pp{font-size:10px;font-weight:700;min-width:26px;text-align:right}
+.badge{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap}
+.b-done{background:var(--teal-l);color:#085041}
+.b-on{background:var(--green-l);color:var(--green)}
+.b-risk{background:var(--amber-l);color:#854F0B}
+.b-block{background:var(--red-l);color:var(--red)}
+.b-todo{background:var(--bg3);color:var(--gray)}
+.jrow{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border)}
+.jrow:last-child{border-bottom:none;padding-bottom:0}
+.jdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.jname{font-size:11px;flex:1;line-height:1.35}
+.jsub{font-size:10px;color:var(--text2);margin-top:1px}
+.bh{display:flex;align-items:center;gap:7px;margin-bottom:8px;padding-bottom:7px;border-bottom:0.5px solid var(--border)}
+.bh-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.bh-t{font-size:12px;font-weight:600}
+.bh-c{font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:auto}
+.cr{background:var(--red-l);color:var(--red)}
+.cg{background:var(--teal-l);color:#085041}
+.divider{height:0.5px;background:var(--border);margin:10px 0}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <svg viewBox="0 0 44 44" fill="none">
+      <circle cx="22" cy="22" r="20" fill="#EEEDFE"/>
+      <ellipse cx="22" cy="18" rx="7" ry="8" fill="#534AB7"/>
+      <ellipse cx="22" cy="17" rx="4.5" ry="5" fill="#B5D4F4"/>
+      <rect x="15" y="24" width="14" height="9" rx="4" fill="#534AB7"/>
+      <rect x="10" y="23" width="6" height="4" rx="2" fill="#7F77DD"/>
+      <rect x="28" y="23" width="6" height="4" rx="2" fill="#7F77DD"/>
+    </svg>
+  </div>
+  <div>
+    <div class="h-title">Wanaut · Dashboard opérationnel</div>
+    <div class="h-sub">Pilotage Q1 2026 · mis à jour le 7 avril 2026</div>
+  </div>
+  <div class="h-right">
+    <div class="h-score-l">Score global Q1</div>
+    <div class="h-score-v" id="gscore">74%</div>
+  </div>
+</div>
+
+<div class="sec">Indicateurs clés · Q1 2026</div>
+<div class="kgrid">
+  <div class="kpi"><div class="kl" id="kl0">Équipe</div><div class="kv" id="kv0">Toutes</div><div class="ks neutral" id="ks0">3 équipes actives</div></div>
+  <div class="kpi"><div class="kl">Complétion Q1</div><div class="kv" id="kv1">74%</div><div class="ks ok" id="ks1">Bonne progression</div></div>
+  <div class="kpi"><div class="kl">Objectifs livrés</div><div class="kv" id="kv2">7</div><div class="ks ok" id="ks2">sur 18 objectifs Q1</div></div>
+  <div class="kpi"><div class="kl">Bloqués / à risque</div><div class="kv" id="kv3">8</div><div class="ks warn" id="ks3">attention requise</div></div>
+</div>
+
+<div class="sec">Filtrer par équipe</div>
+<div class="frow">
+  <button class="fbtn active" onclick="ft('all',this)">Toutes les équipes</button>
+  <button class="fbtn" onclick="ft('mkt',this)">🎙️ Marketing &amp; Com</button>
+  <button class="fbtn" onclick="ft('sales',this)">📈 Sales &amp; CS</button>
+  <button class="fbtn" onclick="ft('mgmt',this)">🏗️ Management / Ops</button>
+</div>
+
+<div class="sec">Progression par équipe · demi-donut + objectifs détaillés</div>
+<div class="four" id="tcards">
+
+  <div class="card tc" data-team="mkt">
+    <div class="ct">Marketing &amp; Com</div><div class="cs">7 objectifs Q1</div>
+    <div style="position:relative;height:72px;margin-bottom:10px"><canvas id="sm_mkt"></canvas></div>
+    <div style="border-top:0.5px solid var(--border);padding-top:9px">
+      <div class="pr"><div class="pn">Identité &amp; narratif</div><div class="pt"><div class="pb" style="width:65%;background:#7F77DD"></div></div><div class="pp">65%</div></div>
+      <div class="pr"><div class="pn">Page pro go-live</div><div class="pt"><div class="pb" style="width:100%;background:#5DCAA5"></div></div><div class="pp">100%</div></div>
+      <div class="pr"><div class="pn">Prez Marketing</div><div class="pt"><div class="pb" style="width:50%;background:#AFA9EC"></div></div><div class="pp">50%</div></div>
+      <div class="pr"><div class="pn">UX existants</div><div class="pt"><div class="pb" style="width:77%;background:#7F77DD"></div></div><div class="pp">77%</div></div>
+      <div class="pr"><div class="pn">Intégration WhatsApp</div><div class="pt"><div class="pb" style="width:0%;background:#E24B4A"></div></div><div class="pp">0%</div></div>
+      <div class="pr"><div class="pn">Com récurrente</div><div class="pt"><div class="pb" style="width:85%;background:#7F77DD"></div></div><div class="pp">85%</div></div>
+      <div class="pr"><div class="pn">Webinars Wanaut</div><div class="pt"><div class="pb" style="width:25%;background:#AFA9EC"></div></div><div class="pp">25%</div></div>
+    </div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:9px">
+      <span class="badge b-done">1 livré</span>
+      <span class="badge b-on">3 on track</span>
+      <span class="badge b-risk">2 à risque</span>
+      <span class="badge b-block">1 bloqué</span>
+    </div>
+  </div>
+
+  <div class="card tc" data-team="sales">
+    <div class="ct">Sales &amp; Customer Success</div><div class="cs">5 objectifs Q1</div>
+    <div style="position:relative;height:72px;margin-bottom:10px"><canvas id="sm_sales"></canvas></div>
+    <div style="border-top:0.5px solid var(--border);padding-top:9px">
+      <div class="pr"><div class="pn">Suivi Pipeline Sales</div><div class="pt"><div class="pb" style="width:60%;background:#1D9E75"></div></div><div class="pp">60%</div></div>
+      <div class="pr"><div class="pn">Suivi Onboardings</div><div class="pt"><div class="pb" style="width:100%;background:#5DCAA5"></div></div><div class="pp">100%</div></div>
+      <div class="pr"><div class="pn">Suivi Farming</div><div class="pt"><div class="pb" style="width:100%;background:#5DCAA5"></div></div><div class="pp">100%</div></div>
+      <div class="pr"><div class="pn">Close un max de deals</div><div class="pt"><div class="pb" style="width:50%;background:#9FE1CB"></div></div><div class="pp">50%</div></div>
+      <div class="pr"><div class="pn">Suivi Sourcing</div><div class="pt"><div class="pb" style="width:100%;background:#5DCAA5"></div></div><div class="pp">100%</div></div>
+    </div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:9px">
+      <span class="badge b-done">3 livrés</span>
+      <span class="badge b-on">1 on track</span>
+      <span class="badge b-risk">1 à risque</span>
+    </div>
+  </div>
+
+  <div class="card tc" data-team="mgmt">
+    <div class="ct">Management / Opérations</div><div class="cs">6 objectifs Q1</div>
+    <div style="position:relative;height:72px;margin-bottom:10px"><canvas id="sm_mgmt"></canvas></div>
+    <div style="border-top:0.5px solid var(--border);padding-top:9px">
+      <div class="pr"><div class="pn">Reporting mensuel</div><div class="pt"><div class="pb" style="width:60%;background:#EF9F27"></div></div><div class="pp">60%</div></div>
+      <div class="pr"><div class="pn">Outils métiers</div><div class="pt"><div class="pb" style="width:100%;background:#5DCAA5"></div></div><div class="pp">100%</div></div>
+      <div class="pr"><div class="pn">Accompagnement équipes</div><div class="pt"><div class="pb" style="width:70%;background:#EF9F27"></div></div><div class="pp">70%</div></div>
+      <div class="pr"><div class="pn">Gouvernance &amp; com</div><div class="pt"><div class="pb" style="width:100%;background:#5DCAA5"></div></div><div class="pp">100%</div></div>
+      <div class="pr"><div class="pn">Améliorer les process</div><div class="pt"><div class="pb" style="width:80%;background:#FAC775"></div></div><div class="pp">80%</div></div>
+      <div class="pr"><div class="pn">Onboarder nouveaux outils</div><div class="pt"><div class="pb" style="width:100%;background:#5DCAA5"></div></div><div class="pp">100%</div></div>
+    </div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:9px">
+      <span class="badge b-done">3 livrés</span>
+      <span class="badge b-on">2 on track</span>
+      <span class="badge b-risk">1 à risque</span>
+    </div>
+  </div>
+
+  <div class="card" style="background:var(--bg2);border:none">
+    <div class="ct">Vue globale Q1</div><div class="cs">Score moyen pondéré</div>
+    <div style="position:relative;height:72px;margin-bottom:10px"><canvas id="sm_global"></canvas></div>
+    <div style="border-top:0.5px solid var(--border);padding-top:9px">
+      <div class="pr"><div class="pn" style="min-width:0;flex:1">Marketing &amp; Com</div><div class="pt"><div class="pb" style="width:57%;background:#7F77DD"></div></div><div class="pp">57%</div></div>
+      <div class="pr"><div class="pn" style="min-width:0;flex:1">Sales &amp; CS</div><div class="pt"><div class="pb" style="width:82%;background:#1D9E75"></div></div><div class="pp">82%</div></div>
+      <div class="pr"><div class="pn" style="min-width:0;flex:1">Mgmt / Ops</div><div class="pt"><div class="pb" style="width:85%;background:#EF9F27"></div></div><div class="pp">85%</div></div>
+      <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border)">
+        <div class="pr"><div class="pn" style="font-weight:700;color:var(--text)">Global Q1</div><div class="pt" style="height:8px"><div class="pb" style="width:74%;background:#888780;height:8px"></div></div><div class="pp" style="font-size:12px">74%</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="two">
+  <div class="tgrid">
+    <div class="card">
+      <div class="bh">
+        <div class="bh-dot" style="background:#E24B4A"></div>
+        <div class="bh-t">Points d'attention · avril 2026</div>
+        <span class="bh-c cr">5 actifs</span>
+      </div>
+      <div class="jrow"><div class="jdot" style="background:#E24B4A"></div><div style="flex:1"><div class="jname">Intégration WhatsApp / Brevo bloquée</div><div class="jsub">Marketing · Rachid + Basma · 0%</div></div><span class="badge b-block">Bloqué</span></div>
+      <div class="jrow"><div class="jdot" style="background:#E24B4A"></div><div style="flex:1"><div class="jname">Webinar Wanaut non lancé</div><div class="jsub">Marketing + Sales · 25% · speakers non confirmés</div></div><span class="badge b-block">Bloqué</span></div>
+      <div class="jrow"><div class="jdot" style="background:#EF9F27"></div><div style="flex:1"><div class="jname">CRM Pipeline Sales à 20%</div><div class="jsub">Sales · Sina · outil non finalisé</div></div><span class="badge b-risk">À risque</span></div>
+      <div class="jrow"><div class="jdot" style="background:#EF9F27"></div><div style="flex:1"><div class="jname">Deals closing à 50%</div><div class="jsub">Sales · Sina · Q1 terminé, objectif non atteint</div></div><span class="badge b-risk">À risque</span></div>
+      <div class="jrow"><div class="jdot" style="background:#EF9F27"></div><div style="flex:1"><div class="jname">Reporting mensuel à 60%</div><div class="jsub">Management · Zineb · dashboard en cours</div></div><span class="badge b-risk">À risque</span></div>
+    </div>
+    <div class="card">
+      <div class="bh">
+        <div class="bh-dot" style="background:#1D9E75"></div>
+        <div class="bh-t">Succès du mois · avril 2026</div>
+        <span class="bh-c cg">7 victoires</span>
+      </div>
+      <div class="jrow"><div class="jdot" style="background:#1D9E75"></div><div style="flex:1"><div class="jname">Page pro go-live · 100%</div><div class="jsub">Marketing · Zineb + Basma · livré en avance</div></div><span class="badge b-done">Livré</span></div>
+      <div class="jrow"><div class="jdot" style="background:#1D9E75"></div><div style="flex:1"><div class="jname">Process Onboarding structuré</div><div class="jsub">Sales · Mehdi · 100%</div></div><span class="badge b-done">Livré</span></div>
+      <div class="jrow"><div class="jdot" style="background:#1D9E75"></div><div style="flex:1"><div class="jname">Process Farming structuré</div><div class="jsub">Sales · Mehdi · 100%</div></div><span class="badge b-done">Livré</span></div>
+      <div class="jrow"><div class="jdot" style="background:#1D9E75"></div><div style="flex:1"><div class="jname">Process Sourcing structuré</div><div class="jsub">Sales · Mehdi + Sina · 100%</div></div><span class="badge b-done">Livré</span></div>
+      <div class="jrow"><div class="jdot" style="background:#1D9E75"></div><div style="flex:1"><div class="jname">Outils métiers déployés</div><div class="jsub">Management · Zineb · 100%</div></div><span class="badge b-done">Livré</span></div>
+      <div class="jrow"><div class="jdot" style="background:#1D9E75"></div><div style="flex:1"><div class="jname">Gouvernance &amp; communication</div><div class="jsub">Management · Zineb · 100%</div></div><span class="badge b-done">Livré</span></div>
+      <div class="jrow"><div class="jdot" style="background:#1D9E75"></div><div style="flex:1"><div class="jname">Nouveaux outils onboardés</div><div class="jsub">Management · Zineb · 100%</div></div><span class="badge b-done">Livré</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct" style="margin-bottom:12px">Répartition des statuts · 18 objectifs Q1</div>
+    <div style="position:relative;height:200px;margin-bottom:12px"><canvas id="donut1"></canvas></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:10px">
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#5DCAA5"></span><span style="color:var(--text2)">Livré 39% (7)</span></span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#97C459"></span><span style="color:var(--text2)">On track 22% (4)</span></span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#EF9F27"></span><span style="color:var(--text2)">À risque 28% (5)</span></span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#E24B4A"></span><span style="color:var(--text2)">Bloqué 11% (2)</span></span>
+    </div>
+    <div style="margin-top:14px;padding-top:12px;border-top:0.5px solid var(--border)">
+      <div class="sec" style="margin-bottom:8px">Tâches overdue · à traiter</div>
+      <div class="jrow"><div class="jdot" style="background:#E24B4A"></div><div style="flex:1"><div class="jname">Intégration Whatsapp</div><div class="jsub">Marketing · due 31/03 · +7 jours</div></div><span class="badge b-block">+7j</span></div>
+      <div class="jrow"><div class="jdot" style="background:#E24B4A"></div><div style="flex:1"><div class="jname">Lancer le Webinar</div><div class="jsub">Marketing + Sales · due 31/03 · +7 jours</div></div><span class="badge b-block">+7j</span></div>
+      <div class="jrow"><div class="jdot" style="background:#EF9F27"></div><div style="flex:1"><div class="jname">Mise en place du CRM</div><div class="jsub">Sales · due 06/04 · +1 jour</div></div><span class="badge b-risk">+1j</span></div>
+      <div class="jrow"><div class="jdot" style="background:#EF9F27"></div><div style="flex:1"><div class="jname">Reporting Opérationnel</div><div class="jsub">Management · due 06/04 · +1 jour</div></div><span class="badge b-risk">+1j</span></div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;font-size:10px;color:var(--text2);padding-top:8px;border-top:0.5px solid var(--border)">
+  Wanaut · Dashboard N2 · Q1 2026 · Données exportées depuis Notion le 07/04/2026
+</div>
+
+<script>
+const td={
+  all:{label:'Toutes',sub:'3 équipes actives',pct:74,livres:7,bloqués:8},
+  mkt:{label:'Marketing & Com',sub:'7 objectifs Q1',pct:57,livres:1,bloqués:3},
+  sales:{label:'Sales & CS',sub:'5 objectifs Q1',pct:82,livres:3,bloqués:1},
+  mgmt:{label:'Management / Ops',sub:'6 objectifs Q1',pct:85,livres:3,bloqués:1}
+};
+
+function ft(team,btn){
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const d=td[team];
+  document.getElementById('kv0').textContent=d.label;
+  document.getElementById('ks0').textContent=d.sub;
+  document.getElementById('kv1').textContent=d.pct+'%';
+  document.getElementById('ks1').textContent=d.pct>=70?'Bonne progression':'En dessous de la cible';
+  document.getElementById('ks1').className='ks '+(d.pct>=70?'ok':'warn');
+  document.getElementById('kv2').textContent=d.livres;
+  document.getElementById('ks2').textContent='objectifs livrés';
+  document.getElementById('kv3').textContent=d.bloqués;
+  document.getElementById('ks3').className='ks '+(d.bloqués>2?'danger':'warn');
+  document.getElementById('gscore').textContent=d.pct+'%';
+  document.querySelectorAll('.tc').forEach(c=>{
+    c.classList.toggle('dimmed',team!=='all'&&c.dataset.team!==team);
+  });
+}
+
+const sp=(pct,color)=>({id:'sp',afterDraw(chart){
+  const{ctx,chartArea:{left,right,bottom}}=chart;
+  ctx.save();ctx.font='700 13px -apple-system,sans-serif';
+  ctx.fillStyle='#1a1a1a';ctx.textAlign='center';
+  ctx.fillText(pct+'%',(left+right)/2,bottom-1);ctx.restore();
+}});
+
+function ms(id,pct,color){
+  new Chart(document.getElementById(id),{
+    type:'doughnut',
+    data:{datasets:[{data:[pct,100-pct],backgroundColor:[color,'rgba(136,135,128,0.12)'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,rotation:-90,circumference:180,cutout:'65%',plugins:{legend:{display:false},tooltip:{enabled:false}}},
+    plugins:[sp(pct,color)]
+  });
+}
+
+ms('sm_mkt',57,'#7F77DD');
+ms('sm_sales',82,'#1D9E75');
+ms('sm_mgmt',85,'#EF9F27');
+ms('sm_global',74,'#888780');
+
+new Chart(document.getElementById('donut1'),{
+  type:'doughnut',
+  data:{datasets:[{data:[7,4,5,2],backgroundColor:['#5DCAA5','#97C459','#EF9F27','#E24B4A'],borderWidth:0,hoverOffset:4}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{display:false}}}
+});
+</script>
+</body>
+</html>
