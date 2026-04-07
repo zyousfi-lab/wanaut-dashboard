@@ -139,7 +139,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <script>
-const NOTION_TOKEN = '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';
+// Token handled by Cloudflare Worker
 const OKR_DB = '326301c54dff8075a5c1d665ea32d9ea';
 
 const TEAM_COLORS = {
@@ -164,13 +164,9 @@ let donutChart = null;
 let currentTeam = 'all';
 
 async function fetchOKRs() {
-  const res = await fetch(`https://api.notion.com/v1/databases/${OKR_DB}/query`, {
+  const res = await fetch(`https://wanaut-notion-proxy.z-yousfi.workers.dev/${OKR_DB}`, {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${NOTION_TOKEN}`,
-      'Notion-Version': '2022-06-28',
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ page_size: 100 })
   });
   const data = await res.json();
