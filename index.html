@@ -163,6 +163,28 @@ let charts = {};
 let donutChart = null;
 let currentTeam = 'all';
 
+const TEAMS_DB = '168301c54dff83ac8d1481f03c5a293c';
+let teamNamesCache = {};
+
+async function fetchTeamNames() {
+  try {
+    const res = await fetch(`https://wanaut-notion-proxy.z-yousfi.workers.dev/${TEAMS_DB}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ page_size: 100 })
+    });
+    const data = await res.json();
+    const cache = {};
+    (data.results || []).forEach(page => {
+      const name = page.properties['Teams']?.title?.[0]?.plain_text || '';
+      if (name) cache[page.id] = name;
+    });
+    return cache;
+  } catch(e) {
+    return {};
+  }
+}
+
 async function fetchOKRs() {
   const res = await fetch(`https://wanaut-notion-proxy.z-yousfi.workers.dev/${OKR_DB}`, {
     method: 'POST',
@@ -176,7 +198,7 @@ async function fetchOKRs() {
 function extractOKR(page) {
   const p = page.properties;
   const name = p['Goal name']?.title?.[0]?.plain_text || 'Sans titre';
-  const teamArr = p['Team']?.multi_select || []; const team = teamArr.length > 0 ? teamArr[0].name : (p['Team']?.select?.name || '—');
+  const teamRelation = p['Team']?.relation || []; const team = teamRelation.length > 0 ? (teamNamesCache[teamRelation[0].id] || '—') : '—';
   const quarter = p['Quarter']?.select?.name || '—';
   const rawProg = p['Progress (rounded)']?.formula?.number ?? p['Progress %']?.number ?? p['Progress%']?.number ?? null;
   const progress = rawProg !== null ? Math.round(rawProg) : 0;
@@ -371,6 +393,7 @@ function buildDonut(okrs) {
 
 async function init() {
   try {
+    teamNamesCache = await fetchTeamNames();
     const pages = await fetchOKRs();
     allOKRs = pages.map(extractOKR).filter(o => o.quarter === 'T1' || o.quarter === 'Q1');
 
