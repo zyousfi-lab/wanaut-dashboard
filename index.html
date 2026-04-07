@@ -247,6 +247,8 @@ function filterTeam(team, btn) {
   document.querySelectorAll('.tc').forEach(c => {
     c.classList.toggle('dimmed', team !== 'all' && c.dataset.team !== team);
   });
+  buildAlerts(okrs);
+  buildDonut(okrs);
 }
 
 function updateKPIs(okrs, team) {
