@@ -178,7 +178,8 @@ function extractOKR(page) {
   const name = p['Goal name']?.title?.[0]?.plain_text || 'Sans titre';
   const team = p['Team']?.multi_select?.[0]?.name || p['Team']?.select?.name || '—';
   const quarter = p['Quarter']?.select?.name || '—';
-  const progress = Math.round((p['Progress%']?.number || p['Progress %']?.number || 0) * 100);
+  const rawProg = p['Progress %']?.number ?? p['Progress%']?.number ?? p['Progress (rounded)']?.number ?? null;
+  const progress = rawProg !== null ? (rawProg > 1 ? Math.round(rawProg) : Math.round(rawProg * 100)) : 0;
   const statut = p['Statut ']?.formula?.string || p['Statut']?.formula?.string || '—';
   const assignee = p['Assignee']?.people?.map(a => a.name).join(', ') || '—';
   const dueDate = p['Due date']?.date?.start || null;
