@@ -280,15 +280,31 @@ function extractProject(page){
   const createdTime=page.created_time||null;
   const priority=p['Priority']?.select?.name||null;
   const assignees=(p['Assignee']?.people||[]).map(a=>a.name).join(', ')||'—';
-  const totalTasks=p['Total Tasks']?.rollup?.number??0;
-  const doneTasksRaw=p['Done Tasks']?.rollup?.number??null;
+  // Done Tasks comes as rollup rich_text "3/4" or rollup number
+  const doneTasksStr = p['Done Tasks']?.rollup?.array?.[0]?.title?.[0]?.plain_text
+    || p['Done Tasks']?.rollup?.array?.[0]?.rich_text?.[0]?.plain_text
+    || (typeof p['Done Tasks']?.rollup?.number === 'number' ? String(p['Done Tasks'].rollup.number) : null)
+    || null;
+  // Parse "3/4" format → doneTasks=3, totalTasks=4
+  let doneTasks=0, totalTasks=0;
+  if(doneTasksStr && doneTasksStr.includes('/')) {
+    const parts = doneTasksStr.split('/');
+    doneTasks = parseInt(parts[0])||0;
+    totalTasks = parseInt(parts[1])||0;
+  } else if(doneTasksStr) {
+    doneTasks = parseInt(doneTasksStr)||0;
+    totalTasks = p['Total Tasks']?.rollup?.number??0;
+  } else {
+    totalTasks = p['Total Tasks']?.rollup?.number??0;
+  }
+  const doneTasksRaw = doneTasks;
 
   // Teams: plain text (not relation in projects table)
   const teamRaw=p['Team']?.multi_select?.map(t=>t.name).join(', ')
     ||p['Team']?.rich_text?.[0]?.plain_text
     ||'—';
 
-  return {name,progress,status,endDate,createdTime,priority,assignees,totalTasks,doneTasksRaw,team:teamRaw};
+  return {name,progress,status,endDate,createdTime,priority,assignees,totalTasks,doneTasks,team:teamRaw};
 }
 
 // ── Project status logic ─────────────────────────────────────
@@ -557,7 +573,14 @@ function buildProjectCards(projs){
     if(charts[id]){try{charts[id].destroy();}catch(e){} delete charts[id];}
   });
 
-  projs.forEach((proj,i)=>{
+  // Sort by deadline: closest first, null deadlines at the end
+  const sorted = [...projs].sort((a,b) => {
+    if(!a.endDate && !b.endDate) return 0;
+    if(!a.endDate) return 1;
+    if(!b.endDate) return -1;
+    return new Date(a.endDate) - new Date(b.endDate);
+  });
+  sorted.forEach((proj,i)=>{
     const st=getProjectStatus(proj.progress,proj.endDate,proj.createdTime);
     const dl=formatDeadline(proj.endDate);
     const color='#7F77DD'; // uniform purple for projects
@@ -580,7 +603,7 @@ function buildProjectCards(projs){
       </div>
       ${proj.team&&proj.team!=='—'?`<div style="font-size:10px;color:var(--text2);margin-bottom:4px">👥 ${proj.team}</div>`:''}
       ${proj.assignees&&proj.assignees!=='—'?`<div style="font-size:10px;color:var(--text2)">🙋 ${proj.assignees.length>40?proj.assignees.substring(0,40)+'…':proj.assignees}</div>`:''}
-      <div style="font-size:10px;color:var(--text2);margin-top:4px">${proj.totalTasks} tâche${proj.totalTasks!==1?'s':''} liée${proj.totalTasks!==1?'s':''}</div>
+      <div style="font-size:10px;color:var(--text2);margin-top:4px">${proj.doneTasks}/${proj.totalTasks} tâche${proj.totalTasks!==1?'s':''} complète${proj.totalTasks!==1?'s':''}</div>
     `;
     container.appendChild(card);
 
