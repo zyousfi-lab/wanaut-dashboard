@@ -3,15 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wanaut · Dashboard N2 · Q1 2026</title>
+<title>Wanaut · Dashboard Opérationnel 2026</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-:root{--bg:#ffffff;--bg2:#f7f6f3;--bg3:#eeede8;--text:#1a1a1a;--text2:#737370;--border:rgba(0,0,0,0.1);--purple:#7F77DD;--purple-l:#EEEDFE;--teal:#1D9E75;--teal-l:#E1F5EE;--amber:#EF9F27;--amber-l:#FAEEDA;--green:#3B6D11;--green-l:#EAF3DE;--red:#A32D2D;--red-l:#FCEBEB;--gray:#888780}
+:root{--bg:#ffffff;--bg2:#f7f6f3;--bg3:#eeede8;--text:#1a1a1a;--text2:#737370;--border:rgba(0,0,0,0.1);--purple:#7F77DD;--purple-l:#EEEDFE;--teal:#1D9E75;--teal-l:#E1F5EE;--amber:#EF9F27;--amber-l:#FAEEDA;--green:#3B6D11;--green-l:#EAF3DE;--red:#A32D2D;--red-l:#FCEBEB;--gray:#888780;--late:#C0392B;--late-l:#FDEDEC}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:20px;font-size:13px;line-height:1.4;min-width:0;overflow-x:hidden}
 .loading{display:flex;align-items:center;justify-content:center;height:200px;font-size:14px;color:var(--text2)}
 .spinner{width:20px;height:20px;border:2px solid var(--bg3);border-top-color:var(--purple);border-radius:50%;animation:spin .8s linear infinite;margin-right:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* Header */
 .header{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:14px;border-bottom:0.5px solid var(--border)}
 .logo{width:34px;height:34px;background:var(--purple-l);border-radius:50%;display:flex;align-items:center;justify-content:center}
 .h-title{font-size:16px;font-weight:600}
@@ -19,6 +21,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .h-right{margin-left:auto;text-align:right}
 .h-score-l{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
 .h-score-v{font-size:26px;font-weight:700}
+
+/* Mode toggle OKRs / Projets */
+.mode-toggle{display:flex;gap:0;margin-bottom:20px;border:0.5px solid var(--border);border-radius:10px;overflow:hidden;width:fit-content}
+.mtbtn{font-size:12px;font-weight:500;padding:7px 20px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;position:relative}
+.mtbtn.active{background:var(--purple);color:#fff;font-weight:600}
+.mtbtn:not(.active):hover{background:var(--bg2)}
+
 .sec{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);margin-bottom:10px}
 .kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
 .kpi{background:var(--bg2);border-radius:10px;padding:12px 14px}
@@ -26,30 +35,55 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .kv{font-size:20px;font-weight:700}
 .ks{font-size:10px;margin-top:2px}
 .ok{color:#3B6D11}.warn{color:#854F0B}.danger{color:var(--red)}.neutral{color:var(--text2)}
+
+/* Quarter selector */
+.qrow{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.qselect-wrap{display:flex;gap:4px;flex-wrap:wrap}
+.qbtn{font-size:11px;padding:5px 14px;border-radius:20px;border:0.5px solid rgba(0,0,0,0.18);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;font-family:inherit;font-weight:500}
+.qbtn:hover{background:var(--bg2)}
+.qbtn.active{background:var(--purple);color:#fff;border-color:var(--purple);font-weight:600}
+.qbtn.all-q.active{background:var(--bg3);color:var(--text);border-color:rgba(0,0,0,0.3)}
+
+/* Team filter */
 .frow{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
 .fbtn{font-size:11px;padding:4px 12px;border-radius:20px;border:0.5px solid rgba(0,0,0,0.18);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;font-family:inherit}
 .fbtn:hover{background:var(--bg2)}
 .fbtn.active{background:var(--bg2);color:var(--text);border-color:rgba(0,0,0,0.3);font-weight:600}
+
 .four{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
 .tgrid{display:grid;grid-template-rows:1fr 1fr;gap:12px}
 .card{background:var(--bg);border:0.5px solid var(--border);border-radius:12px;padding:14px 16px}
 .ct{font-size:12px;font-weight:600;margin-bottom:2px}
 .cs{font-size:10px;color:var(--text2);margin-bottom:10px}
-.tc{transition:all .2s}
-.tc.dimmed{opacity:.18}
-.pr{display:flex;align-items:center;gap:7px;margin-bottom:7px}
-.pr:last-child{margin-bottom:0}
+.tc{transition:all .2s}.tc.dimmed{opacity:.18}
+.pr{display:flex;align-items:center;gap:7px;margin-bottom:7px}.pr:last-child{margin-bottom:0}
 .pn{font-size:10px;color:var(--text2);flex:1;line-height:1.3}
 .pt{width:64px;flex-shrink:0;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
 .pb{height:100%;border-radius:3px;transition:width .6s}
 .pp{font-size:10px;font-weight:700;min-width:26px;text-align:right}
+
+/* Badges */
 .badge{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap}
 .b-done{background:var(--teal-l);color:#085041}
 .b-on{background:var(--green-l);color:var(--green)}
 .b-risk{background:var(--amber-l);color:#854F0B}
 .b-block{background:var(--red-l);color:var(--red)}
+.b-late{background:var(--late-l);color:var(--late)}
 .b-todo{background:var(--bg3);color:var(--gray)}
+.b-q1{background:#EDE9FD;color:#534AB7}.b-q2{background:#E1F5EE;color:#085041}
+.b-q3{background:#FAEEDA;color:#854F0B}.b-q4{background:#FCEBEB;color:#A32D2D}
+
+/* Project cards grid — 3 cols (projects have more info) */
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.proj-card{background:var(--bg);border:0.5px solid var(--border);border-radius:12px;padding:14px 16px}
+.proj-meta{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.deadline-chip{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:600}
+.deadline-ok{background:var(--green-l);color:var(--green)}
+.deadline-soon{background:var(--amber-l);color:#854F0B}
+.deadline-late{background:var(--late-l);color:var(--late)}
+.deadline-none{background:var(--bg3);color:var(--gray)}
+
 .jrow{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border)}
 .jrow:last-child{border-bottom:none;padding-bottom:0}
 .jdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:3px}
@@ -59,17 +93,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bh-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .bh-t{font-size:12px;font-weight:600}
 .bh-c{font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:auto}
-.cr{background:var(--red-l);color:var(--red)}
-.cg{background:var(--teal-l);color:#085041}
+.cr{background:var(--red-l);color:var(--red)}.cg{background:var(--teal-l);color:#085041}
+.empty-state{font-size:11px;color:var(--text2);padding:8px 0;font-style:italic}
 .last-update{text-align:center;font-size:10px;color:var(--text2);padding-top:8px;border-top:0.5px solid var(--border);margin-top:4px}
+
+@media(max-width:1100px){.four{grid-template-columns:repeat(2,1fr)}.three{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.kgrid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+@media(max-width:600px){.four{grid-template-columns:1fr}.three{grid-template-columns:1fr}.kgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<div id="loading" class="loading">
-  <div class="spinner"></div>
-  Chargement des données Notion...
-</div>
+<div id="loading" class="loading"><div class="spinner"></div>Chargement des données Notion...</div>
 
 <div id="dashboard" style="display:none">
 
@@ -86,351 +121,545 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div>
     <div class="h-title">Wanaut · Dashboard opérationnel</div>
-    <div class="h-sub" id="subtitle">Pilotage Q1 2026</div>
+    <div class="h-sub" id="subtitle">Pilotage 2026</div>
   </div>
   <div class="h-right">
-    <div class="h-score-l">Score global Q1</div>
+    <div class="h-score-l" id="score-label">Score global</div>
     <div class="h-score-v" id="gscore">—</div>
   </div>
 </div>
 
-<div class="sec">Indicateurs clés · Q1 2026</div>
-<div class="kgrid">
-  <div class="kpi"><div class="kl" id="kl0">Équipe</div><div class="kv" id="kv0">—</div><div class="ks neutral" id="ks0">—</div></div>
-  <div class="kpi"><div class="kl">Complétion Q1</div><div class="kv" id="kv1">—</div><div class="ks" id="ks1">—</div></div>
-  <div class="kpi"><div class="kl">Objectifs livrés</div><div class="kv" id="kv2">—</div><div class="ks" id="ks2">—</div></div>
-  <div class="kpi"><div class="kl">Bloqués / à risque</div><div class="kv" id="kv3">—</div><div class="ks" id="ks3">—</div></div>
+<!-- Mode toggle -->
+<div class="mode-toggle">
+  <button class="mtbtn active" id="btn-okr" onclick="setMode('okr')">🎯 Objectifs (OKRs)</button>
+  <button class="mtbtn" id="btn-proj" onclick="setMode('proj')">🚀 Projets</button>
 </div>
 
-<div class="sec">Filtrer par équipe</div>
-<div class="frow" id="filter-row"></div>
-
-<div class="sec">Progression par équipe</div>
-<div class="four" id="team-cards"></div>
-
-<div class="two">
-  <div class="tgrid">
-    <div class="card">
-      <div class="bh">
-        <div class="bh-dot" style="background:#E24B4A"></div>
-        <div class="bh-t">Points d'attention</div>
-        <span class="bh-c cr" id="alert-count">—</span>
+<!-- ═══ OKR SECTION ═══ -->
+<div id="okr-section">
+  <div class="sec">Trimestre</div>
+  <div class="qrow"><div class="qselect-wrap" id="quarter-row"></div></div>
+  <div class="sec" id="kpi-section-label">Indicateurs clés</div>
+  <div class="kgrid">
+    <div class="kpi"><div class="kl" id="kl0">Équipe</div><div class="kv" id="kv0">—</div><div class="ks neutral" id="ks0">—</div></div>
+    <div class="kpi"><div class="kl" id="kl1">Complétion</div><div class="kv" id="kv1">—</div><div class="ks" id="ks1">—</div></div>
+    <div class="kpi"><div class="kl">Objectifs livrés</div><div class="kv" id="kv2">—</div><div class="ks" id="ks2">—</div></div>
+    <div class="kpi"><div class="kl">Bloqués / à risque</div><div class="kv" id="kv3">—</div><div class="ks" id="ks3">—</div></div>
+  </div>
+  <div class="sec">Filtrer par équipe</div>
+  <div class="frow" id="filter-row"></div>
+  <div class="sec" id="cards-section-label">Progression par équipe</div>
+  <div class="four" id="team-cards"></div>
+  <div class="two">
+    <div class="tgrid">
+      <div class="card">
+        <div class="bh"><div class="bh-dot" style="background:#E24B4A"></div><div class="bh-t">Points d'attention</div><span class="bh-c cr" id="alert-count">—</span></div>
+        <div id="alerts-list"></div>
       </div>
-      <div id="alerts-list"></div>
+      <div class="card">
+        <div class="bh"><div class="bh-dot" style="background:#1D9E75"></div><div class="bh-t">Succès</div><span class="bh-c cg" id="success-count">—</span></div>
+        <div id="success-list"></div>
+      </div>
     </div>
     <div class="card">
-      <div class="bh">
-        <div class="bh-dot" style="background:#1D9E75"></div>
-        <div class="bh-t">Succès du mois</div>
-        <span class="bh-c cg" id="success-count">—</span>
-      </div>
-      <div id="success-list"></div>
+      <div class="ct" style="margin-bottom:12px">Répartition des statuts</div>
+      <div style="position:relative;height:200px;margin-bottom:12px"><canvas id="donut1"></canvas></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:10px" id="donut-legend"></div>
     </div>
   </div>
-  <div class="card">
-    <div class="ct" style="margin-bottom:12px">Répartition des statuts</div>
-    <div style="position:relative;height:200px;margin-bottom:12px"><canvas id="donut1"></canvas></div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:10px" id="donut-legend"></div>
+</div>
+
+<!-- ═══ PROJETS SECTION ═══ -->
+<div id="proj-section" style="display:none">
+  <div class="sec" id="proj-kpi-label">Indicateurs projets</div>
+  <div class="kgrid">
+    <div class="kpi"><div class="kl">Projets actifs</div><div class="kv" id="pkv0">—</div><div class="ks neutral" id="pks0">—</div></div>
+    <div class="kpi"><div class="kl">Complétion moyenne</div><div class="kv" id="pkv1">—</div><div class="ks" id="pks1">—</div></div>
+    <div class="kpi"><div class="kl">Livrés</div><div class="kv" id="pkv2">—</div><div class="ks ok" id="pks2">—</div></div>
+    <div class="kpi"><div class="kl">En retard / à risque</div><div class="kv" id="pkv3">—</div><div class="ks" id="pks3">—</div></div>
+  </div>
+  <div class="sec">Tous les projets</div>
+  <div class="three" id="proj-cards"></div>
+  <div class="two">
+    <div class="tgrid">
+      <div class="card">
+        <div class="bh"><div class="bh-dot" style="background:#E24B4A"></div><div class="bh-t">Projets en retard / à risque</div><span class="bh-c cr" id="proj-alert-count">—</span></div>
+        <div id="proj-alerts-list"></div>
+      </div>
+      <div class="card">
+        <div class="bh"><div class="bh-dot" style="background:#1D9E75"></div><div class="bh-t">Projets livrés</div><span class="bh-c cg" id="proj-success-count">—</span></div>
+        <div id="proj-success-list"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct" style="margin-bottom:12px">Répartition des statuts projets</div>
+      <div style="position:relative;height:200px;margin-bottom:12px"><canvas id="donut2"></canvas></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:10px" id="donut2-legend"></div>
+    </div>
   </div>
 </div>
 
 <div class="last-update" id="last-update"></div>
-
 </div>
 
 <script>
-// Token handled by Cloudflare Worker
-const OKR_DB = '326301c54dff8075a5c1d665ea32d9ea';
+const PROXY = 'https://wanaut-notion-proxy.z-yousfi.workers.dev';
+const OKR_DB  = '326301c54dff8075a5c1d665ea32d9ea';
+const PROJ_DB = '322301c54dff808d8037c7eb18b87b64';
+const TEAMS_DB = '168301c54dff83ac8d1481f03c5a293c';
 
 const TEAM_COLORS = {
-  'Marketing & Communication': '#7F77DD',
-  'Sales & Customer success': '#1D9E75',
-  'Management': '#EF9F27',
-  'Product': '#378ADD',
-  'Operations': '#D85A30'
+  'Marketing & Communication':'#7F77DD','Sales & Customer success':'#1D9E75',
+  'Management':'#EF9F27','Product':'#378ADD','Operations':'#D85A30'
 };
-
 const TEAM_LABELS = {
-  'Marketing & Communication': '🎙️ Marketing & Com',
-  'Sales & Customer success': '📈 Sales & CS',
-  'Management': '🏗️ Management / Ops',
-  'Product': '⚙️ Product',
-  'Operations': '🏢 Operations'
+  'Marketing & Communication':'🎙️ Marketing & Com','Sales & Customer success':'📈 Sales & CS',
+  'Management':'🏗️ Management / Ops','Product':'⚙️ Product','Operations':'🏢 Operations'
 };
+const QUARTERS = ['T1','T2','T3','T4'];
+const Q_ALIASES = {'Q1':'T1','Q2':'T2','Q3':'T3','Q4':'T4'};
+const Q_LABELS  = {'T1':'T1 · Jan–Mar','T2':'T2 · Avr–Jun','T3':'T3 · Jul–Sep','T4':'T4 · Oct–Déc'};
+const Q_BADGE   = {'T1':'b-q1','T2':'b-q2','T3':'b-q3','T4':'b-q4'};
 
-let allOKRs = [];
-let charts = {};
-let donutChart = null;
-let currentTeam = 'all';
+function currentQuarter(){const m=new Date().getMonth()+1;return m<=3?'T1':m<=6?'T2':m<=9?'T3':'T4';}
 
-const TEAMS_DB = '168301c54dff83ac8d1481f03c5a293c';
-let teamNamesCache = {};
+let allOKRs=[], allProjects=[], teamNamesCache={};
+let charts={}, donutChart=null, donut2Chart=null;
+let currentTeam='all', selectedQuarters=new Set([currentQuarter()]);
+let currentMode='okr';
 
-async function fetchTeamNames() {
-  try {
-    const res = await fetch(`https://wanaut-notion-proxy.z-yousfi.workers.dev/${TEAMS_DB}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ page_size: 100 })
-    });
-    const data = await res.json();
-    const cache = {};
-    (data.results || []).forEach(page => {
-      const name = page.properties['Teams']?.title?.[0]?.plain_text || '';
-      if (name) cache[page.id] = name;
-    });
+// ── Fetch ────────────────────────────────────────────────────
+async function fetchTeamNames(){
+  try{
+    const res=await fetch(`${PROXY}/${TEAMS_DB}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({page_size:100})});
+    const data=await res.json();
+    const cache={};
+    (data.results||[]).forEach(p=>{const n=p.properties['Teams']?.title?.[0]?.plain_text||'';if(n)cache[p.id]=n;});
     return cache;
-  } catch(e) {
-    return {};
+  }catch(e){return {};}
+}
+
+async function fetchAll(dbId){
+  let all=[],cursor=undefined;
+  do{
+    const body={page_size:100};if(cursor)body.start_cursor=cursor;
+    const res=await fetch(`${PROXY}/${dbId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data=await res.json();
+    all=all.concat(data.results||[]);
+    cursor=data.has_more?data.next_cursor:undefined;
+  }while(cursor);
+  return all;
+}
+
+// ── Extract OKR ──────────────────────────────────────────────
+function extractOKR(page){
+  const p=page.properties;
+  const name=p['Goal name']?.title?.[0]?.plain_text||'Sans titre';
+  const teamRel=p['Team']?.relation||[];
+  const team=teamRel.length>0?(teamNamesCache[teamRel[0].id]||'—'):'—';
+  let quarter=p['Quarter']?.select?.name||'—';
+  if(Q_ALIASES[quarter])quarter=Q_ALIASES[quarter];
+  const rawProg=p['Progress (rounded)']?.formula?.number??p['Progress %']?.number??null;
+  const progress=rawProg!==null?Math.round(rawProg):0;
+  const statut=p['Statut ']?.formula?.string||p['Statut']?.formula?.string||'—';
+  const assignee=p['Assignee']?.people?.map(a=>a.name).join(', ')||'—';
+  return {name,team,quarter,progress,statut,assignee};
+}
+
+// ── Extract Project ──────────────────────────────────────────
+function extractProject(page){
+  const p=page.properties;
+  const name=p['Project name']?.title?.[0]?.plain_text||'Sans titre';
+
+  // Progress: formula returns string like "75%"
+  const progStr=p['Progress']?.formula?.string||p['Progress %']?.formula?.string||'0%';
+  const progress=parseInt(progStr.replace('%',''))||0;
+
+  const status=p['Status']?.status?.name||p['Status']?.select?.name||'—';
+  const endDate=p['End date']?.date?.start||null;
+  const createdTime=page.created_time||null;
+  const priority=p['Priority']?.select?.name||null;
+  const assignees=(p['Assignee']?.people||[]).map(a=>a.name).join(', ')||'—';
+  const totalTasks=p['Total Tasks']?.rollup?.number??0;
+  const doneTasksRaw=p['Done Tasks']?.rollup?.number??null;
+
+  // Teams: plain text (not relation in projects table)
+  const teamRaw=p['Team']?.multi_select?.map(t=>t.name).join(', ')
+    ||p['Team']?.rich_text?.[0]?.plain_text
+    ||'—';
+
+  return {name,progress,status,endDate,createdTime,priority,assignees,totalTasks,doneTasksRaw,team:teamRaw};
+}
+
+// ── Project status logic ─────────────────────────────────────
+function getProjectStatus(progress, endDate, createdTime){
+  if(progress>=100) return {cls:'b-done', label:'Livré ✓', dot:'#1D9E75'};
+
+  if(!endDate) return {cls:'b-on', label:'En cours', dot:'#97C459'};
+
+  const now=new Date();
+  const end=new Date(endDate);
+  const created=createdTime?new Date(createdTime):null;
+  const daysLeft=Math.round((end-now)/(1000*60*60*24));
+
+  // Past deadline
+  if(daysLeft<0) return {cls:'b-late', label:'En retard', dot:'#C0392B'};
+
+  // Compute ratio of time remaining vs total duration
+  let ratioLeft=null;
+  if(created){
+    const totalDays=Math.round((end-created)/(1000*60*60*24));
+    if(totalDays>0) ratioLeft=daysLeft/totalDays;
+  }
+
+  // At risk: less than 20% of time left but less than 80% done
+  //          OR less than 20% time left and less than 50% done (critical)
+  if(ratioLeft!==null){
+    if(ratioLeft<0.20 && progress<50) return {cls:'b-risk', label:'À risque 🔴', dot:'#EF9F27'};
+    if(ratioLeft<0.20 && progress<80) return {cls:'b-risk', label:'À risque', dot:'#EF9F27'};
+  }
+
+  return {cls:'b-on', label:'On track', dot:'#97C459'};
+}
+
+function formatDeadline(endDate){
+  if(!endDate) return {label:'Pas de deadline', cls:'deadline-none'};
+  const now=new Date();
+  const end=new Date(endDate);
+  const days=Math.round((end-now)/(1000*60*60*24));
+  const label=end.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+  if(days<0) return {label:`⚠ ${label} (J+${Math.abs(days)})`, cls:'deadline-late'};
+  if(days<=30) return {label:`${label} (J-${days})`, cls:'deadline-soon'};
+  return {label, cls:'deadline-ok'};
+}
+
+// ── OKR helpers ──────────────────────────────────────────────
+function getOKRStatus(statut,progress){
+  if(statut.includes('Livré')||progress>=100) return {cls:'b-done',label:'Livré'};
+  if(statut.includes('avance')||progress>=80)  return {cls:'b-on',label:'En avance'};
+  if(statut.includes('track')||(progress>=60&&progress<80)) return {cls:'b-on',label:'On track'};
+  if(statut.includes('risque')||(progress>=30&&progress<60)) return {cls:'b-risk',label:'À risque'};
+  return {cls:'b-block',label:'Bloqué'};
+}
+
+// ── Mode toggle ──────────────────────────────────────────────
+function setMode(mode){
+  currentMode=mode;
+  document.getElementById('okr-section').style.display=mode==='okr'?'block':'none';
+  document.getElementById('proj-section').style.display=mode==='proj'?'block':'none';
+  document.getElementById('btn-okr').classList.toggle('active',mode==='okr');
+  document.getElementById('btn-proj').classList.toggle('active',mode==='proj');
+  if(mode==='okr'){
+    const ql=getQuarterLabel();
+    document.getElementById('subtitle').textContent=`Pilotage ${ql} · ${getFilteredOKRs('all').length} objectifs`;
+    document.getElementById('score-label').textContent=`Score global · ${ql}`;
+    const avg=calcAvg(getFilteredOKRs('all'));
+    document.getElementById('gscore').textContent=avg+'%';
+  } else {
+    document.getElementById('subtitle').textContent=`Projets · ${allProjects.length} projets`;
+    document.getElementById('score-label').textContent='Complétion projets';
+    const avg=calcAvg(allProjects);
+    document.getElementById('gscore').textContent=avg+'%';
   }
 }
 
-async function fetchOKRs() {
-  const res = await fetch(`https://wanaut-notion-proxy.z-yousfi.workers.dev/${OKR_DB}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ page_size: 100 })
-  });
-  const data = await res.json();
-  return data.results || [];
+function calcAvg(items){
+  return items.length>0?Math.round(items.reduce((s,o)=>s+o.progress,0)/items.length):0;
 }
 
-function extractOKR(page) {
-  const p = page.properties;
-  const name = p['Goal name']?.title?.[0]?.plain_text || 'Sans titre';
-  const teamRelation = p['Team']?.relation || []; const team = teamRelation.length > 0 ? (teamNamesCache[teamRelation[0].id] || '—') : '—';
-  const quarter = p['Quarter']?.select?.name || '—';
-  const rawProg = p['Progress (rounded)']?.formula?.number ?? p['Progress %']?.number ?? p['Progress%']?.number ?? null;
-  const progress = rawProg !== null ? Math.round(rawProg) : 0;
-  const statut = p['Statut ']?.formula?.string || p['Statut']?.formula?.string || '—';
-  const assignee = p['Assignee']?.people?.map(a => a.name).join(', ') || '—';
-  const dueDate = p['Due date']?.date?.start || null;
-  const priority = p['Priority']?.select?.name || '—';
-  return { name, team, quarter, progress, statut, assignee, dueDate, priority };
+// ── Quarter ──────────────────────────────────────────────────
+function getQuarterLabel(){
+  if(selectedQuarters.size===4) return 'Année complète';
+  if(selectedQuarters.size===1) return Q_LABELS[[...selectedQuarters][0]];
+  return [...selectedQuarters].sort().join(' + ');
+}
+function getFilteredOKRs(team){
+  let o=allOKRs.filter(x=>selectedQuarters.has(x.quarter));
+  if(team&&team!=='all') o=o.filter(x=>x.team===team);
+  return o;
 }
 
-function getStatusClass(statut, progress) {
-  if (statut.includes('Livré') || progress >= 100) return { cls: 'b-done', label: 'Livré' };
-  if (statut.includes('avance') || progress >= 80) return { cls: 'b-on', label: 'En avance' };
-  if (statut.includes('track') || (progress >= 60 && progress < 80)) return { cls: 'b-on', label: 'On track' };
-  if (statut.includes('risque') || (progress >= 30 && progress < 60)) return { cls: 'b-risk', label: 'À risque' };
-  return { cls: 'b-block', label: 'Bloqué' };
-}
-
-function getBarColor(team) {
-  return TEAM_COLORS[team] || '#888780';
-}
-
-function buildFilterRow(teams) {
-  const row = document.getElementById('filter-row');
-  row.innerHTML = '';
-  const allBtn = document.createElement('button');
-  allBtn.className = 'fbtn active';
-  allBtn.textContent = 'Toutes les équipes';
-  allBtn.onclick = () => filterTeam('all', allBtn);
+function buildQuarterRow(){
+  const row=document.getElementById('quarter-row');row.innerHTML='';
+  const allBtn=document.createElement('button');
+  allBtn.className='qbtn all-q'+(selectedQuarters.size===4?' active':'');
+  allBtn.textContent="Toute l'année";
+  allBtn.onclick=()=>{QUARTERS.forEach(q=>selectedQuarters.add(q));refreshOKRs();buildQuarterRow();};
   row.appendChild(allBtn);
-  teams.forEach(team => {
-    const btn = document.createElement('button');
-    btn.className = 'fbtn';
-    btn.textContent = TEAM_LABELS[team] || team;
-    btn.onclick = () => filterTeam(team, btn);
+  QUARTERS.forEach(q=>{
+    const btn=document.createElement('button');
+    btn.className='qbtn'+(selectedQuarters.has(q)&&selectedQuarters.size<4?' active':'');
+    btn.textContent=q;btn.title=Q_LABELS[q];
+    btn.onclick=()=>{
+      if(selectedQuarters.size===4){selectedQuarters=new Set([q]);}
+      else if(selectedQuarters.has(q)&&selectedQuarters.size===1){return;}
+      else if(selectedQuarters.has(q)){selectedQuarters.delete(q);}
+      else{selectedQuarters.add(q);}
+      refreshOKRs();buildQuarterRow();
+    };
     row.appendChild(btn);
   });
 }
 
-function filterTeam(team, btn) {
-  currentTeam = team;
-  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const okrs = team === 'all' ? allOKRs : allOKRs.filter(o => o.team === team);
-  updateKPIs(okrs, team);
-  document.querySelectorAll('.tc').forEach(c => {
-    c.classList.toggle('dimmed', team !== 'all' && c.dataset.team !== team);
+// ── OKR section ──────────────────────────────────────────────
+function buildFilterRow(teams){
+  const row=document.getElementById('filter-row');row.innerHTML='';
+  const allBtn=document.createElement('button');allBtn.className='fbtn active';allBtn.textContent='Toutes les équipes';
+  allBtn.onclick=()=>filterTeam('all',allBtn);row.appendChild(allBtn);
+  teams.forEach(team=>{
+    const btn=document.createElement('button');btn.className='fbtn';btn.textContent=TEAM_LABELS[team]||team;
+    btn.onclick=()=>filterTeam(team,btn);row.appendChild(btn);
   });
-  buildAlerts(okrs);
-  buildDonut(okrs);
 }
 
-function updateKPIs(okrs, team) {
-  const avg = okrs.length > 0 ? Math.round(okrs.reduce((s, o) => s + o.progress, 0) / okrs.length) : 0;
-  const livres = okrs.filter(o => o.progress >= 100).length;
-  const bloques = okrs.filter(o => {
-    const st = getStatusClass(o.statut, o.progress);
-    return st.cls === 'b-block' || st.cls === 'b-risk';
-  }).length;
-
-  document.getElementById('kv0').textContent = team === 'all' ? 'Toutes' : (TEAM_LABELS[team] || team).replace(/^[^ ]+ /, '');
-  document.getElementById('ks0').textContent = team === 'all' ? `${[...new Set(allOKRs.map(o=>o.team))].length} équipes actives` : `${okrs.length} objectifs Q1`;
-  document.getElementById('kv1').textContent = avg + '%';
-  document.getElementById('ks1').textContent = avg >= 70 ? 'Bonne progression' : 'En dessous de la cible';
-  document.getElementById('ks1').className = 'ks ' + (avg >= 70 ? 'ok' : 'warn');
-  document.getElementById('kv2').textContent = livres;
-  document.getElementById('ks2').textContent = `sur ${okrs.length} objectifs Q1`;
-  document.getElementById('ks2').className = 'ks ok';
-  document.getElementById('kv3').textContent = bloques;
-  document.getElementById('ks3').className = 'ks ' + (bloques > 3 ? 'danger' : 'warn');
-  document.getElementById('gscore').textContent = avg + '%';
+function filterTeam(team,btn){
+  currentTeam=team;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  const okrs=getFilteredOKRs(team);
+  updateOKRKPIs(okrs,team);
+  document.querySelectorAll('.tc').forEach(c=>c.classList.toggle('dimmed',team!=='all'&&c.dataset.team!==team));
+  buildAlerts(okrs);buildDonut(okrs);
 }
 
-function buildTeamCards(teams, okrsByTeam) {
-  const container = document.getElementById('team-cards');
-  container.innerHTML = '';
-  Object.keys(charts).forEach(id => { try { charts[id].destroy(); } catch(e){} });
-  charts = {};
+function updateOKRKPIs(okrs,team){
+  const ql=getQuarterLabel();
+  const avg=calcAvg(okrs);
+  const livres=okrs.filter(o=>o.progress>=100).length;
+  const bloques=okrs.filter(o=>{const s=getOKRStatus(o.statut,o.progress);return s.cls==='b-block'||s.cls==='b-risk';}).length;
+  document.getElementById('kpi-section-label').textContent=`Indicateurs clés · ${ql}`;
+  document.getElementById('score-label').textContent=`Score global · ${ql}`;
+  document.getElementById('kv0').textContent=team==='all'?'Toutes':(TEAM_LABELS[team]||team).replace(/^[^ ]+ /,'');
+  document.getElementById('ks0').textContent=team==='all'?`${[...new Set(allOKRs.map(o=>o.team))].length} équipes actives`:`${okrs.length} objectifs · ${ql}`;
+  document.getElementById('kl1').textContent=`Complétion · ${ql}`;
+  document.getElementById('kv1').textContent=avg+'%';
+  document.getElementById('ks1').textContent=avg>=70?'Bonne progression':'En dessous de la cible';
+  document.getElementById('ks1').className='ks '+(avg>=70?'ok':'warn');
+  document.getElementById('kv2').textContent=livres;
+  document.getElementById('ks2').textContent=`sur ${okrs.length} objectifs`;
+  document.getElementById('kv3').textContent=bloques;
+  document.getElementById('ks3').className='ks '+(bloques>3?'danger':'warn');
+  document.getElementById('gscore').textContent=avg+'%';
+  document.getElementById('subtitle').textContent=`Pilotage ${ql} · ${getFilteredOKRs('all').length} objectifs`;
+}
 
-  teams.forEach((team, i) => {
-    const okrs = okrsByTeam[team] || [];
-    const avg = okrs.length > 0 ? Math.round(okrs.reduce((s,o) => s+o.progress, 0) / okrs.length) : 0;
-    const color = TEAM_COLORS[team] || '#888780';
-    const livres = okrs.filter(o => o.progress >= 100).length;
-    const ontrack = okrs.filter(o => { const s=getStatusClass(o.statut,o.progress); return s.cls==='b-on' && o.progress<100; }).length;
-    const risk = okrs.filter(o => getStatusClass(o.statut,o.progress).cls==='b-risk').length;
-    const block = okrs.filter(o => getStatusClass(o.statut,o.progress).cls==='b-block').length;
-
-    const canvasId = `semi_${i}`;
-    const card = document.createElement('div');
-    card.className = 'card tc';
-    card.dataset.team = team;
-    card.innerHTML = `
-      <div class="ct">${TEAM_LABELS[team] || team}</div>
-      <div class="cs">${okrs.length} objectifs Q1</div>
+function buildTeamCards(allTeams){
+  const container=document.getElementById('team-cards');container.innerHTML='';
+  Object.keys(charts).forEach(id=>{try{charts[id].destroy();}catch(e){}});charts={};
+  allTeams.forEach((team,i)=>{
+    const okrs=getFilteredOKRs(team);
+    const avg=okrs.length>0?Math.round(okrs.reduce((s,o)=>s+o.progress,0)/okrs.length):0;
+    const color=TEAM_COLORS[team]||'#888780';
+    const livres=okrs.filter(o=>o.progress>=100).length;
+    const ontrack=okrs.filter(o=>{const s=getOKRStatus(o.statut,o.progress);return s.cls==='b-on'&&o.progress<100;}).length;
+    const risk=okrs.filter(o=>getOKRStatus(o.statut,o.progress).cls==='b-risk').length;
+    const block=okrs.filter(o=>getOKRStatus(o.statut,o.progress).cls==='b-block').length;
+    const ql=getQuarterLabel();const canvasId=`semi_${i}`;
+    const card=document.createElement('div');card.className='card tc';card.dataset.team=team;
+    const progressRows=okrs.length>0
+      ?okrs.map(o=>{const qb=selectedQuarters.size>1?`<span class="badge ${Q_BADGE[o.quarter]||'b-todo'}" style="margin-right:4px">${o.quarter}</span>`:'';
+        return `<div class="pr"><div class="pn">${qb}${o.name.length>28?o.name.substring(0,28)+'…':o.name}</div><div class="pt"><div class="pb" style="width:${o.progress}%;background:${color}"></div></div><div class="pp">${o.progress}%</div></div>`;}).join('')
+      :`<div class="empty-state">Aucun objectif pour ${ql}</div>`;
+    card.innerHTML=`<div class="ct">${TEAM_LABELS[team]||team}</div><div class="cs">${okrs.length>0?okrs.length+' objectif'+(okrs.length>1?'s':'')+' · '+ql:ql}</div>
       <div style="position:relative;height:72px;margin-bottom:10px"><canvas id="${canvasId}"></canvas></div>
-      <div style="border-top:0.5px solid var(--border);padding-top:9px">
-        ${okrs.map(o => `
-          <div class="pr">
-            <div class="pn">${o.name.length > 30 ? o.name.substring(0,30)+'...' : o.name}</div>
-            <div class="pt"><div class="pb" style="width:${o.progress}%;background:${color}"></div></div>
-            <div class="pp">${o.progress}%</div>
-          </div>
-        `).join('')}
-      </div>
+      <div style="border-top:0.5px solid var(--border);padding-top:9px">${progressRows}</div>
       <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:9px">
-        ${livres > 0 ? `<span class="badge b-done">${livres} livré${livres>1?'s':''}</span>` : ''}
-        ${ontrack > 0 ? `<span class="badge b-on">${ontrack} on track</span>` : ''}
-        ${risk > 0 ? `<span class="badge b-risk">${risk} à risque</span>` : ''}
-        ${block > 0 ? `<span class="badge b-block">${block} bloqué${block>1?'s':''}</span>` : ''}
+        ${livres>0?`<span class="badge b-done">${livres} livré${livres>1?'s':''}</span>`:''}
+        ${ontrack>0?`<span class="badge b-on">${ontrack} on track</span>`:''}
+        ${risk>0?`<span class="badge b-risk">${risk} à risque</span>`:''}
+        ${block>0?`<span class="badge b-block">${block} bloqué${block>1?'s':''}</span>`:''}
+        ${okrs.length===0?`<span class="badge b-todo">Pas d'objectifs</span>`:''}
+      </div>`;
+    container.appendChild(card);
+    setTimeout(()=>{
+      const canvas=document.getElementById(canvasId);if(!canvas)return;
+      charts[canvasId]=new Chart(canvas,{type:'doughnut',
+        data:{datasets:[{data:[avg,100-avg],backgroundColor:[okrs.length===0?'rgba(136,135,128,0.25)':color,'rgba(136,135,128,0.12)'],borderWidth:0}]},
+        options:{responsive:true,maintainAspectRatio:false,rotation:-90,circumference:180,cutout:'65%',plugins:{legend:{display:false},tooltip:{enabled:false}}},
+        plugins:[{id:'center',afterDraw(chart){const{ctx,chartArea:{left,right,bottom}}=chart;ctx.save();ctx.font='700 13px -apple-system,sans-serif';ctx.fillStyle=okrs.length===0?'#aaa':'#1a1a1a';ctx.textAlign='center';ctx.fillText(okrs.length===0?'—':avg+'%',(left+right)/2,bottom-1);ctx.restore();}}]
+      });
+    },100);
+  });
+}
+
+function buildAlerts(okrs){
+  const alerts=okrs.filter(o=>{const s=getOKRStatus(o.statut,o.progress);return s.cls==='b-block'||s.cls==='b-risk';}).sort((a,b)=>a.progress-b.progress);
+  const successes=okrs.filter(o=>o.progress>=100);
+  document.getElementById('alert-count').textContent=alerts.length;
+  document.getElementById('success-count').textContent=successes.length+' victoires';
+  document.getElementById('alerts-list').innerHTML=alerts.length===0
+    ?'<div class="empty-state">Aucun point d\'attention 🎉</div>'
+    :alerts.slice(0,5).map(o=>{const s=getOKRStatus(o.statut,o.progress);const dot=s.cls==='b-block'?'#E24B4A':'#EF9F27';const qb=selectedQuarters.size>1?`<span class="badge ${Q_BADGE[o.quarter]||'b-todo'}" style="margin-right:3px">${o.quarter}</span>`:'';
+      return `<div class="jrow"><div class="jdot" style="background:${dot}"></div><div style="flex:1"><div class="jname">${qb}${o.name.length>40?o.name.substring(0,40)+'…':o.name}</div><div class="jsub">${TEAM_LABELS[o.team]||o.team} · ${o.progress}%${o.assignee!=='—'?' · '+o.assignee:''}</div></div><span class="badge ${s.cls}">${s.label}</span></div>`;}).join('');
+  document.getElementById('success-list').innerHTML=successes.length===0
+    ?'<div class="empty-state">Pas encore de livraisons complètes</div>'
+    :successes.slice(0,6).map(o=>{const qb=selectedQuarters.size>1?`<span class="badge ${Q_BADGE[o.quarter]||'b-todo'}" style="margin-right:3px">${o.quarter}</span>`:'';
+      return `<div class="jrow"><div class="jdot" style="background:#1D9E75"></div><div style="flex:1"><div class="jname">${qb}${o.name.length>40?o.name.substring(0,40)+'…':o.name}</div><div class="jsub">${TEAM_LABELS[o.team]||o.team}${o.assignee!=='—'?' · '+o.assignee:''}</div></div><span class="badge b-done">Livré ✓</span></div>`;}).join('');
+}
+
+function buildDonut(okrs){
+  const livres=okrs.filter(o=>o.progress>=100).length;
+  const ontrack=okrs.filter(o=>{const s=getOKRStatus(o.statut,o.progress);return s.cls==='b-on'&&o.progress<100;}).length;
+  const risk=okrs.filter(o=>getOKRStatus(o.statut,o.progress).cls==='b-risk').length;
+  const block=okrs.filter(o=>getOKRStatus(o.statut,o.progress).cls==='b-block').length;
+  const total=okrs.length||1;
+  if(donutChart)donutChart.destroy();
+  donutChart=new Chart(document.getElementById('donut1'),{type:'doughnut',
+    data:{datasets:[{data:[livres,ontrack,risk,block],backgroundColor:['#5DCAA5','#97C459','#EF9F27','#E24B4A'],borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{display:false}}}});
+  document.getElementById('donut-legend').innerHTML=[
+    {color:'#5DCAA5',label:`Livré ${Math.round(livres/total*100)}% (${livres})`},
+    {color:'#97C459',label:`On track ${Math.round(ontrack/total*100)}% (${ontrack})`},
+    {color:'#EF9F27',label:`À risque ${Math.round(risk/total*100)}% (${risk})`},
+    {color:'#E24B4A',label:`Bloqué ${Math.round(block/total*100)}% (${block})`}
+  ].map(i=>`<span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:${i.color}"></span><span style="color:var(--text2)">${i.label}</span></span>`).join('');
+}
+
+function refreshOKRs(){
+  currentTeam='all';
+  document.querySelectorAll('.fbtn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  const visible=getFilteredOKRs('all');
+  const allTeams=[...new Set(allOKRs.map(o=>o.team))].filter(t=>t!=='—');
+  updateOKRKPIs(visible,'all');
+  buildTeamCards(allTeams);
+  buildAlerts(visible);
+  buildDonut(visible);
+  document.getElementById('cards-section-label').textContent=`Progression par équipe · ${getQuarterLabel()}`;
+}
+
+// ── Projects section ─────────────────────────────────────────
+function buildProjectsSection(){
+  const projs=allProjects;
+  const avg=calcAvg(projs);
+  const livres=projs.filter(p=>p.progress>=100).length;
+  const active=projs.filter(p=>p.progress<100).length;
+  const atRisk=projs.filter(p=>{const s=getProjectStatus(p.progress,p.endDate,p.createdTime);return s.cls==='b-late'||s.cls==='b-risk';}).length;
+
+  document.getElementById('pkv0').textContent=active;
+  document.getElementById('pks0').textContent=`${projs.length} projets au total`;
+  document.getElementById('pkv1').textContent=avg+'%';
+  document.getElementById('pks1').textContent=avg>=60?'Bonne progression':'Attention requise';
+  document.getElementById('pks1').className='ks '+(avg>=60?'ok':'warn');
+  document.getElementById('pkv2').textContent=livres;
+  document.getElementById('pks2').textContent=`sur ${projs.length} projets`;
+  document.getElementById('pkv3').textContent=atRisk;
+  document.getElementById('pks3').className='ks '+(atRisk>2?'danger':'warn');
+
+  buildProjectCards(projs);
+  buildProjectAlerts(projs);
+  buildDonut2(projs);
+}
+
+function buildProjectCards(projs){
+  const container=document.getElementById('proj-cards');container.innerHTML='';
+  // destroy old proj charts
+  ['proj_semi_'+0,'proj_semi_'+1,'proj_semi_'+2,'proj_semi_'+3,'proj_semi_'+4,
+   'proj_semi_'+5,'proj_semi_'+6,'proj_semi_'+7,'proj_semi_'+8,'proj_semi_'+9].forEach(id=>{
+    if(charts[id]){try{charts[id].destroy();}catch(e){} delete charts[id];}
+  });
+
+  projs.forEach((proj,i)=>{
+    const st=getProjectStatus(proj.progress,proj.endDate,proj.createdTime);
+    const dl=formatDeadline(proj.endDate);
+    const color='#7F77DD'; // uniform purple for projects
+    const canvasId=`proj_semi_${i}`;
+    const card=document.createElement('div');card.className='proj-card';
+
+    card.innerHTML=`
+      <div class="ct" style="margin-bottom:4px">${proj.name.length>42?proj.name.substring(0,42)+'…':proj.name}</div>
+      <div class="proj-meta">
+        <span class="badge ${st.cls}">${st.label}</span>
+        ${proj.priority?`<span class="badge b-todo">${proj.priority}</span>`:''}
+        <span class="deadline-chip ${dl.cls}">${dl.label}</span>
       </div>
+      <div style="position:relative;height:60px;margin-bottom:8px"><canvas id="${canvasId}"></canvas></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden">
+          <div style="width:${proj.progress}%;height:100%;background:${st.cls==='b-late'?'#C0392B':st.cls==='b-risk'?'#EF9F27':'#7F77DD'};border-radius:3px;transition:width .6s"></div>
+        </div>
+        <span style="font-size:11px;font-weight:700">${proj.progress}%</span>
+      </div>
+      ${proj.team&&proj.team!=='—'?`<div style="font-size:10px;color:var(--text2);margin-bottom:4px">👥 ${proj.team}</div>`:''}
+      ${proj.assignees&&proj.assignees!=='—'?`<div style="font-size:10px;color:var(--text2)">🙋 ${proj.assignees.length>40?proj.assignees.substring(0,40)+'…':proj.assignees}</div>`:''}
+      <div style="font-size:10px;color:var(--text2);margin-top:4px">${proj.totalTasks} tâche${proj.totalTasks!==1?'s':''} liée${proj.totalTasks!==1?'s':''}</div>
     `;
     container.appendChild(card);
 
-    setTimeout(() => {
-      const canvas = document.getElementById(canvasId);
-      if (!canvas) return;
-      charts[canvasId] = new Chart(canvas, {
-        type: 'doughnut',
-        data: { datasets: [{ data: [avg, 100-avg], backgroundColor: [color, 'rgba(136,135,128,0.12)'], borderWidth: 0 }] },
-        options: { responsive: true, maintainAspectRatio: false, rotation: -90, circumference: 180, cutout: '65%', plugins: { legend: { display: false }, tooltip: { enabled: false } } },
-        plugins: [{
-          id: 'center',
-          afterDraw(chart) {
-            const { ctx, chartArea: { left, right, bottom } } = chart;
-            ctx.save(); ctx.font = '700 13px -apple-system,sans-serif';
-            ctx.fillStyle = '#1a1a1a'; ctx.textAlign = 'center';
-            ctx.fillText(avg + '%', (left + right) / 2, bottom - 1); ctx.restore();
-          }
-        }]
+    setTimeout(()=>{
+      const canvas=document.getElementById(canvasId);if(!canvas)return;
+      const barColor=st.cls==='b-late'?'#C0392B':st.cls==='b-risk'?'#EF9F27':'#7F77DD';
+      charts[canvasId]=new Chart(canvas,{type:'doughnut',
+        data:{datasets:[{data:[proj.progress,100-proj.progress],backgroundColor:[barColor,'rgba(136,135,128,0.12)'],borderWidth:0}]},
+        options:{responsive:true,maintainAspectRatio:false,rotation:-90,circumference:180,cutout:'65%',plugins:{legend:{display:false},tooltip:{enabled:false}}},
+        plugins:[{id:'center',afterDraw(chart){const{ctx,chartArea:{left,right,bottom}}=chart;ctx.save();ctx.font='700 12px -apple-system,sans-serif';ctx.fillStyle='#1a1a1a';ctx.textAlign='center';ctx.fillText(proj.progress+'%',(left+right)/2,bottom-1);ctx.restore();}}]
       });
-    }, 100);
+    },100);
   });
 }
 
-function buildAlerts(okrs) {
-  const alerts = okrs.filter(o => {
-    const s = getStatusClass(o.statut, o.progress);
-    return s.cls === 'b-block' || s.cls === 'b-risk';
-  }).sort((a, b) => a.progress - b.progress);
-
-  const successes = okrs.filter(o => o.progress >= 100);
-
-  document.getElementById('alert-count').textContent = alerts.length;
-  document.getElementById('success-count').textContent = successes.length + ' victoires';
-
-  document.getElementById('alerts-list').innerHTML = alerts.slice(0, 5).map(o => {
-    const s = getStatusClass(o.statut, o.progress);
-    const dotColor = s.cls === 'b-block' ? '#E24B4A' : '#EF9F27';
-    return `<div class="jrow">
-      <div class="jdot" style="background:${dotColor}"></div>
-      <div style="flex:1">
-        <div class="jname">${o.name.length > 40 ? o.name.substring(0,40)+'...' : o.name}</div>
-        <div class="jsub">${TEAM_LABELS[o.team] || o.team} · ${o.progress}% · ${o.assignee !== '—' ? o.assignee : ''}</div>
-      </div>
-      <span class="badge ${s.cls}">${s.label}</span>
-    </div>`;
-  }).join('');
-
-  document.getElementById('success-list').innerHTML = successes.slice(0, 6).map(o => `
-    <div class="jrow">
-      <div class="jdot" style="background:#1D9E75"></div>
-      <div style="flex:1">
-        <div class="jname">${o.name.length > 40 ? o.name.substring(0,40)+'...' : o.name}</div>
-        <div class="jsub">${TEAM_LABELS[o.team] || o.team} · ${o.assignee !== '—' ? o.assignee : ''}</div>
-      </div>
-      <span class="badge b-done">Livré</span>
-    </div>
-  `).join('');
+function buildProjectAlerts(projs){
+  const late=projs.filter(p=>{const s=getProjectStatus(p.progress,p.endDate,p.createdTime);return s.cls==='b-late'||s.cls==='b-risk';});
+  const done=projs.filter(p=>p.progress>=100);
+  document.getElementById('proj-alert-count').textContent=late.length;
+  document.getElementById('proj-success-count').textContent=done.length;
+  document.getElementById('proj-alerts-list').innerHTML=late.length===0
+    ?'<div class="empty-state">Aucun projet en retard 🎉</div>'
+    :late.map(p=>{const s=getProjectStatus(p.progress,p.endDate,p.createdTime);const dl=formatDeadline(p.endDate);
+      return `<div class="jrow"><div class="jdot" style="background:${s.dot}"></div><div style="flex:1"><div class="jname">${p.name.length>40?p.name.substring(0,40)+'…':p.name}</div><div class="jsub">${p.progress}% · ${dl.label}${p.assignees!=='—'?' · '+p.assignees:''}</div></div><span class="badge ${s.cls}">${s.label}</span></div>`;}).join('');
+  document.getElementById('proj-success-list').innerHTML=done.length===0
+    ?'<div class="empty-state">Pas encore de projets livrés</div>'
+    :done.map(p=>`<div class="jrow"><div class="jdot" style="background:#1D9E75"></div><div style="flex:1"><div class="jname">${p.name.length>40?p.name.substring(0,40)+'…':p.name}</div><div class="jsub">${p.team&&p.team!=='—'?p.team:''}</div></div><span class="badge b-done">Livré ✓</span></div>`).join('');
 }
 
-function buildDonut(okrs) {
-  const livres = okrs.filter(o => o.progress >= 100).length;
-  const ontrack = okrs.filter(o => { const s=getStatusClass(o.statut,o.progress); return s.cls==='b-on' && o.progress<100; }).length;
-  const risk = okrs.filter(o => getStatusClass(o.statut,o.progress).cls==='b-risk').length;
-  const block = okrs.filter(o => getStatusClass(o.statut,o.progress).cls==='b-block').length;
-  const total = okrs.length;
-
-  if (donutChart) donutChart.destroy();
-  const canvas = document.getElementById('donut1');
-  donutChart = new Chart(canvas, {
-    type: 'doughnut',
-    data: { datasets: [{ data: [livres, ontrack, risk, block], backgroundColor: ['#5DCAA5','#97C459','#EF9F27','#E24B4A'], borderWidth: 0, hoverOffset: 4 }] },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '66%', plugins: { legend: { display: false } } }
-  });
-
-  document.getElementById('donut-legend').innerHTML = [
-    { color: '#5DCAA5', label: `Livré ${Math.round(livres/total*100)}% (${livres})` },
-    { color: '#97C459', label: `On track ${Math.round(ontrack/total*100)}% (${ontrack})` },
-    { color: '#EF9F27', label: `À risque ${Math.round(risk/total*100)}% (${risk})` },
-    { color: '#E24B4A', label: `Bloqué ${Math.round(block/total*100)}% (${block})` }
-  ].map(i => `<span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:${i.color}"></span><span style="color:var(--text2)">${i.label}</span></span>`).join('');
+function buildDonut2(projs){
+  const livres=projs.filter(p=>p.progress>=100).length;
+  const ontrack=projs.filter(p=>{const s=getProjectStatus(p.progress,p.endDate,p.createdTime);return s.cls==='b-on';}).length;
+  const risk=projs.filter(p=>getProjectStatus(p.progress,p.endDate,p.createdTime).cls==='b-risk').length;
+  const late=projs.filter(p=>getProjectStatus(p.progress,p.endDate,p.createdTime).cls==='b-late').length;
+  const total=projs.length||1;
+  if(donut2Chart)donut2Chart.destroy();
+  donut2Chart=new Chart(document.getElementById('donut2'),{type:'doughnut',
+    data:{datasets:[{data:[livres,ontrack,risk,late],backgroundColor:['#5DCAA5','#97C459','#EF9F27','#C0392B'],borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{display:false}}}});
+  document.getElementById('donut2-legend').innerHTML=[
+    {color:'#5DCAA5',label:`Livré ${Math.round(livres/total*100)}% (${livres})`},
+    {color:'#97C459',label:`On track ${Math.round(ontrack/total*100)}% (${ontrack})`},
+    {color:'#EF9F27',label:`À risque ${Math.round(risk/total*100)}% (${risk})`},
+    {color:'#C0392B',label:`En retard ${Math.round(late/total*100)}% (${late})`}
+  ].map(i=>`<span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:${i.color}"></span><span style="color:var(--text2)">${i.label}</span></span>`).join('');
 }
 
-async function init() {
-  try {
-    teamNamesCache = await fetchTeamNames();
-    const pages = await fetchOKRs();
-    allOKRs = pages.map(extractOKR).filter(o => o.quarter === 'T1' || o.quarter === 'Q1');
+// ── Init ─────────────────────────────────────────────────────
+async function init(){
+  try{
+    teamNamesCache=await fetchTeamNames();
+    const [okrPages,projPages]=await Promise.all([fetchAll(OKR_DB),fetchAll(PROJ_DB)]);
 
-    if (allOKRs.length === 0) allOKRs = pages.map(extractOKR);
+    allOKRs=okrPages.map(extractOKR).filter(o=>o.quarter!=='—');
+    allProjects=projPages.map(extractProject);
 
-    const teams = [...new Set(allOKRs.map(o => o.team))].filter(t => t !== '—');
-    const okrsByTeam = {};
-    teams.forEach(t => { okrsByTeam[t] = allOKRs.filter(o => o.team === t); });
+    const allTeams=[...new Set(allOKRs.map(o=>o.team))].filter(t=>t!=='—');
+    buildQuarterRow();
+    buildFilterRow(allTeams);
+    refreshOKRs();
+    buildProjectsSection();
 
-    buildFilterRow(teams);
-    updateKPIs(allOKRs, 'all');
-    buildTeamCards(teams, okrsByTeam);
-    buildAlerts(allOKRs);
-    buildDonut(allOKRs);
-
-    const now = new Date();
-    document.getElementById('last-update').textContent = `Données Notion · mis à jour le ${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'})}`;
-    document.getElementById('subtitle').textContent = `Pilotage Q1 2026 · ${allOKRs.length} objectifs`;
-
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-
-  } catch(err) {
-    document.getElementById('loading').innerHTML = `<div style="color:var(--red);text-align:center"><div style="font-size:14px;margin-bottom:8px">Erreur de connexion Notion</div><div style="font-size:12px;color:var(--text2)">${err.message}</div></div>`;
+    const now=new Date();
+    document.getElementById('last-update').textContent=`Données Notion · mis à jour le ${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
+    document.getElementById('loading').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+  }catch(err){
+    document.getElementById('loading').innerHTML=`<div style="color:var(--red);text-align:center"><div style="font-size:14px;margin-bottom:8px">Erreur de connexion Notion</div><div style="font-size:12px;color:var(--text2)">${err.message}</div></div>`;
   }
 }
 
-
-const PASSWORD = "zizirules";
-function checkPassword() {
-  const stored = sessionStorage.getItem("wanaut_auth");
-  if (stored === PASSWORD) { init(); return; }
-  const overlay = document.createElement("div");
-  overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:#f7f6f3;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:-apple-system,sans-serif";
-  overlay.innerHTML = `<div style="background:white;border-radius:16px;padding:32px 40px;border:0.5px solid rgba(0,0,0,0.1);text-align:center;max-width:320px;width:90%">
+// ── Password ─────────────────────────────────────────────────
+const PASSWORD="zizirules";
+function checkPassword(){
+  const stored=sessionStorage.getItem("wanaut_auth");
+  if(stored===PASSWORD){init();return;}
+  const overlay=document.createElement("div");
+  overlay.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:#f7f6f3;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:-apple-system,sans-serif";
+  overlay.innerHTML=`<div style="background:white;border-radius:16px;padding:32px 40px;border:0.5px solid rgba(0,0,0,0.1);text-align:center;max-width:320px;width:90%">
     <div style="width:44px;height:44px;background:#EEEDFE;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
       <svg width="20" height="20" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="20" fill="#EEEDFE"/><ellipse cx="22" cy="18" rx="7" ry="8" fill="#534AB7"/><ellipse cx="22" cy="17" rx="4.5" ry="5" fill="#B5D4F4"/><rect x="15" y="24" width="14" height="9" rx="4" fill="#534AB7"/><rect x="10" y="23" width="6" height="4" rx="2" fill="#7F77DD"/><rect x="28" y="23" width="6" height="4" rx="2" fill="#7F77DD"/></svg>
     </div>
@@ -441,26 +670,15 @@ function checkPassword() {
     <button id="pwd-btn" style="width:100%;padding:10px;background:#534AB7;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Accéder au dashboard</button>
   </div>`;
   document.body.appendChild(overlay);
-  const input = document.getElementById("pwd-input");
-  const btn = document.getElementById("pwd-btn");
-  const error = document.getElementById("pwd-error");
+  const input=document.getElementById("pwd-input"),btn=document.getElementById("pwd-btn"),error=document.getElementById("pwd-error");
   input.focus();
-  function tryLogin() {
-    if (input.value === PASSWORD) {
-      sessionStorage.setItem("wanaut_auth", PASSWORD);
-      overlay.remove();
-      init();
-    } else {
-      error.style.display = "block";
-      input.value = "";
-      input.focus();
-    }
+  function tryLogin(){
+    if(input.value===PASSWORD){sessionStorage.setItem("wanaut_auth",PASSWORD);overlay.remove();init();}
+    else{error.style.display="block";input.value="";input.focus();}
   }
-  btn.onclick = tryLogin;
-  input.onkeydown = e => { if (e.key === "Enter") tryLogin(); };
+  btn.onclick=tryLogin;input.onkeydown=e=>{if(e.key==="Enter")tryLogin();};
 }
 checkPassword();
-
 </script>
 </body>
 </html>
