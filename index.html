@@ -270,41 +270,23 @@ function extractOKR(page){
 function extractProject(page){
   const p=page.properties;
   const name=p['Project name']?.title?.[0]?.plain_text||'Sans titre';
-
-  // Progress: formula returns string like "75%"
-  const progStr=p['Progress']?.formula?.string||p['Progress %']?.formula?.string||'0%';
+  // Progress %: formula string like "95%"
+  const progStr=p['Progress %']?.formula?.string||'0%';
   const progress=parseInt(progStr.replace('%',''))||0;
-
-  const status=p['Status']?.status?.name||p['Status']?.select?.name||'—';
+  // Status: type "status"
+  const status=p['Status']?.status?.name||'—';
   const endDate=p['End date']?.date?.start||null;
+  const startDate=p['Start date']?.date?.start||null;
   const createdTime=page.created_time||null;
   const priority=p['Priority']?.select?.name||null;
   const assignees=(p['Assignee']?.people||[]).map(a=>a.name).join(', ')||'—';
-  // Done Tasks comes as rollup rich_text "3/4" or rollup number
-  const doneTasksStr = p['Done Tasks']?.rollup?.array?.[0]?.title?.[0]?.plain_text
-    || p['Done Tasks']?.rollup?.array?.[0]?.rich_text?.[0]?.plain_text
-    || (typeof p['Done Tasks']?.rollup?.number === 'number' ? String(p['Done Tasks'].rollup.number) : null)
-    || null;
-  // Parse "3/4" format → doneTasks=3, totalTasks=4
-  let doneTasks=0, totalTasks=0;
-  if(doneTasksStr && doneTasksStr.includes('/')) {
-    const parts = doneTasksStr.split('/');
-    doneTasks = parseInt(parts[0])||0;
-    totalTasks = parseInt(parts[1])||0;
-  } else if(doneTasksStr) {
-    doneTasks = parseInt(doneTasksStr)||0;
-    totalTasks = p['Total Tasks']?.rollup?.number??0;
-  } else {
-    totalTasks = p['Total Tasks']?.rollup?.number??0;
-  }
-  const doneTasksRaw = doneTasks;
-
-  // Teams: plain text (not relation in projects table)
-  const teamRaw=p['Team']?.multi_select?.map(t=>t.name).join(', ')
-    ||p['Team']?.rich_text?.[0]?.plain_text
-    ||'—';
-
-  return {name,progress,status,endDate,createdTime,priority,assignees,totalTasks,doneTasks,team:teamRaw};
+  // Tasks: relation array length = total tasks
+  const totalTasks=(p['Tasks']?.relation||[]).length;
+  // Done tasks: derived from progress% × totalTasks
+  const doneTasks=totalTasks>0?Math.round(progress/100*totalTasks):0;
+  // Team: multi_select
+  const teamRaw=(p['Team']?.multi_select||[]).map(t=>t.name).join(', ')||'—';
+  return {name,progress,status,endDate,startDate,createdTime,priority,assignees,totalTasks,doneTasks,team:teamRaw};
 }
 
 // ── Project status logic ─────────────────────────────────────
@@ -545,18 +527,20 @@ function refreshOKRs(){
 // ── Projects section ─────────────────────────────────────────
 function buildProjectsSection(){
   const projs=allProjects;
-  const avg=calcAvg(projs);
-  const livres=projs.filter(p=>p.progress>=100).length;
-  const active=projs.filter(p=>p.progress<100).length;
-  const atRisk=projs.filter(p=>{const s=getProjectStatus(p.progress,p.endDate,p.createdTime);return s.cls==='b-late'||s.cls==='b-risk';}).length;
+  // Active = not "Not started" (exclude projects not yet begun)
+  const activeProjs=projs.filter(p=>p.status!=='Not started'&&p.status!=='Cancelled');
+  const avg=calcAvg(activeProjs);
+  const livres=activeProjs.filter(p=>p.progress>=100).length;
+  const inProgress=activeProjs.filter(p=>p.progress<100).length;
+  const atRisk=activeProjs.filter(p=>{const s=getProjectStatus(p.progress,p.endDate,p.createdTime);return s.cls==='b-late'||s.cls==='b-risk';}).length;
 
-  document.getElementById('pkv0').textContent=active;
-  document.getElementById('pks0').textContent=`${projs.length} projets au total`;
+  document.getElementById('pkv0').textContent=inProgress;
+  document.getElementById('pks0').textContent=`${projs.length} total · ${activeProjs.length} actifs`;
   document.getElementById('pkv1').textContent=avg+'%';
   document.getElementById('pks1').textContent=avg>=60?'Bonne progression':'Attention requise';
   document.getElementById('pks1').className='ks '+(avg>=60?'ok':'warn');
   document.getElementById('pkv2').textContent=livres;
-  document.getElementById('pks2').textContent=`sur ${projs.length} projets`;
+  document.getElementById('pks2').textContent=`sur ${activeProjs.length} actifs`;
   document.getElementById('pkv3').textContent=atRisk;
   document.getElementById('pks3').className='ks '+(atRisk>2?'danger':'warn');
 
@@ -620,6 +604,7 @@ function buildProjectCards(projs){
 }
 
 function buildProjectAlerts(projs){
+  projs=projs.filter(p=>p.status!=='Not started'&&p.status!=='Cancelled');
   const late=projs.filter(p=>{const s=getProjectStatus(p.progress,p.endDate,p.createdTime);return s.cls==='b-late'||s.cls==='b-risk';});
   const done=projs.filter(p=>p.progress>=100);
   document.getElementById('proj-alert-count').textContent=late.length;
@@ -634,6 +619,7 @@ function buildProjectAlerts(projs){
 }
 
 function buildDonut2(projs){
+  projs=projs.filter(p=>p.status!=='Not started'&&p.status!=='Cancelled');
   const livres=projs.filter(p=>p.progress>=100).length;
   const ontrack=projs.filter(p=>{const s=getProjectStatus(p.progress,p.endDate,p.createdTime);return s.cls==='b-on';}).length;
   const risk=projs.filter(p=>getProjectStatus(p.progress,p.endDate,p.createdTime).cls==='b-risk').length;
